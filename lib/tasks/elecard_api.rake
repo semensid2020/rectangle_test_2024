@@ -36,4 +36,49 @@ namespace :elecard_api do
     end
     puts "\n\n- - - - - - - - - - - -\n\n"
   end
+
+  # Для запуска задачи нужно выполнить команду rake elecard_api:check_calculations
+  task check_calculations: :environment do |t, args|
+    puts "\n\n- - - - - - - - - - - -\n"
+    puts "\nRake task started at: #{Time.zone.now}"
+
+    # 1. Формируем данные, высылаемые для проверки
+    tests_array = []
+    Test.order(:created_at).find_each do |test|
+      json = if test.floating_required
+               {
+                 left_bottom: { x: test.min_x.to_f, y: test.min_y.to_f },
+                 right_top: { x: test.max_x.to_f, y: test.max_y.to_f }
+               }
+             else
+               {
+                 left_bottom: { x: test.min_x.to_i, y: test.min_y.to_i },
+                 right_top: { x: test.max_x.to_i, y: test.max_y.to_i }
+               }
+             end
+
+      tests_array << json
+    end
+
+    headers = { 'Content-Type' => 'application/json' }
+    body = {
+      key: ENV.fetch('API_KEY_STRING'),
+      method: 'CheckResults',
+      params: tests_array
+    }
+
+    # 2. Получаем результат проверки
+    resp = HTTParty.post(ENV.fetch('API_ENDPOINT'), headers: headers, body: body.to_json)
+
+    if resp.code == 200 && resp['result'].present?
+      puts "\nRake task finished at: #{Time.zone.now}. \nResults:"
+      puts "Response code: #{resp.code}"
+      puts resp.body
+    else
+      puts "Rake task failed at: #{Time.zone.now}. Response code: #{resp.code}"
+      puts "\nResponse body:"
+      print resp.body
+    end
+    puts "\n\n- - - - - - - - - - - -\n\n"
+  end
 end
