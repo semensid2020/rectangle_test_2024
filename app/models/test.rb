@@ -12,5 +12,7 @@
 #  updated_at        :datetime         not null
 #
 class Test < ApplicationRecord
+  include TestCalculation
+
   has_many :circles, dependent: :destroy
 end

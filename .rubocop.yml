@@ -47,6 +47,9 @@ Style/CommentedKeyword:
 Style/TrailingCommaInArrayLiteral:
   Enabled: false
 
+Style/HashSyntax:
+  Enabled: false
+
 Rails/FilePath:
   EnforcedStyle: arguments
 
@@ -81,4 +84,7 @@ Lint/EmptyBlock:
   Enabled: false
 
 Lint/RedundantCopDisableDirective:
+  Enabled: false
+
+Lint/UnusedBlockArgument:
   Enabled: false

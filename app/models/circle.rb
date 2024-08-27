@@ -16,6 +16,7 @@
 #  test_id           :integer          not null
 #
 class Circle < ApplicationRecord
+  include CircleCalculation
   belongs_to :test
 
   validates :center_x, presence: true
